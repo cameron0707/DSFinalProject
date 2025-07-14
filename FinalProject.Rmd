@@ -3,20 +3,31 @@ title: "final project"
 output: html_document
 date: "2025-07-13"
 ---
-
-
 ```{r}
+# First I loaded libraries
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(stringr)
+library(tidyverse)
+```
+
+
+```{r} 
+# First I read the data file into R and set it to variable called my_data
 my_data <- read.csv("/Users/camerondiehl/downloads/QBS103_GSE157103_genes.csv")
 print(my_data)
 ```
 
 ```{r}
+# I read the metadata file in and set it to a variable called metadata
 metadata <- read.csv("/Users/camerondiehl/downloads/QBS103_GSE157103_series_matrix-1.csv")
 print(metadata)
 ```
 
 ```{r}
-# Rename gene name column, by overwriting my_data (asked ChatGPT how to properly do this)
+# I renamed x column to gene, by overwriting my_data
+# (I asked ChatGPT how to properly do this)
 my_data <- my_data %>%
   rename(Gene = X)
 
@@ -24,7 +35,7 @@ my_data <- my_data %>%
 long_expr <- my_data %>%
   pivot_longer(
     cols = -Gene,                    # Keep 'Gene' column fixed
-    names_to = "participant_id",     # New column for participant/sample names
+    names_to = "participant_id",     # New column for participant names
     values_to = "Expression"         # New column for gene expression values
   )
 ```
@@ -32,24 +43,58 @@ long_expr <- my_data %>%
 
 
 ```{r}
-combined <- left_join(long_expr, metadata, by = "participant_id")
+# I combined my two data tables using merge
+combined <- merge(long_expr, metadata, by = "participant_id")
 combined <- combined %>%
   drop_na()
 print(combined)
 ```
 
-```{r}
-library(tidyverse)
 
-long_expr <- my_data %>%
-  pivot_longer(
-    cols = -X,                      
-    names_to = "participant_id",   
-    values_to = "Expression"         
-  )
+
+```{r}
+# I filtered my combined data for my gene of choice and then filtered it to show expression
+ggplot(filter(combined, Gene == "AAMDC"), aes(x = Expression)) +
+  geom_histogram(binwidth = 0.5, fill = "#20B2AA", color = "black") +
+  labs(
+    title = "Histogram of AAMDC Expression",
+    x = "Expression",
+    y = "Frequency"
+  ) +
+  theme_classic()
+```
+
+
+
+
+
+
+```{r}
+library(dplyr)
+
+combined <- combined %>%
+  mutate(age = as.character(age),             # make sure it's character
+         age = if_else(age == ">89", "89", age),  # replace ">89" with "89"
+         age = as.numeric(age))                # convert to numeric once
+ggplot(filter(combined, Gene == "AAMDC"), aes(x = age, y = Expression)) +
+  geom_point(color = "#6A5ACD") +
+  labs(
+    title = "Histogram of AAMDC Expression",
+    x = "Age",
+    y = "Expression"
+  ) +
+  theme_classic()
 ```
 
 ```{r}
-combined <- left_join(long_expr, metadata, by = "participant_id")
-print(combined)
+# Then I filtered data to show where gene AAMDC is 
+ggplot(filter(combined, Gene == "AAMDC"), aes(x = sex, y = Expression, fill = mechanical_ventilation)) +
+  geom_boxplot() +
+  labs(
+    title = "AAMDC Expression by Sex and Mechanical Ventilation",
+    x = "Sex",
+    y = "Expression",
+    fill = "Mechanical Ventilation"
+  ) +
+  theme_classic()
 ```
