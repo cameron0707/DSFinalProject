@@ -1,0 +1,55 @@
+---
+title: "final project"
+output: html_document
+date: "2025-07-13"
+---
+
+
+```{r}
+my_data <- read.csv("/Users/camerondiehl/downloads/QBS103_GSE157103_genes.csv")
+print(my_data)
+```
+
+```{r}
+metadata <- read.csv("/Users/camerondiehl/downloads/QBS103_GSE157103_series_matrix-1.csv")
+print(metadata)
+```
+
+```{r}
+# Rename gene name column, by overwriting my_data (asked ChatGPT how to properly do this)
+my_data <- my_data %>%
+  rename(Gene = X)
+
+# Reshape from wide to long format
+long_expr <- my_data %>%
+  pivot_longer(
+    cols = -Gene,                    # Keep 'Gene' column fixed
+    names_to = "participant_id",     # New column for participant/sample names
+    values_to = "Expression"         # New column for gene expression values
+  )
+```
+
+
+
+```{r}
+combined <- left_join(long_expr, metadata, by = "participant_id")
+combined <- combined %>%
+  drop_na()
+print(combined)
+```
+
+```{r}
+library(tidyverse)
+
+long_expr <- my_data %>%
+  pivot_longer(
+    cols = -X,                      
+    names_to = "participant_id",   
+    values_to = "Expression"         
+  )
+```
+
+```{r}
+combined <- left_join(long_expr, metadata, by = "participant_id")
+print(combined)
+```
