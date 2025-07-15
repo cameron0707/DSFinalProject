@@ -73,9 +73,10 @@ ggplot(filter(combined, Gene == "AAMDC"), aes(x = Expression)) +
 library(dplyr)
 
 combined <- combined %>%
-  mutate(age = as.character(age),             # make sure it's character
-         age = if_else(age == ">89", "89", age),  # replace ">89" with "89"
-         age = as.numeric(age))                # convert to numeric once
+  mutate(age = as.character(age),          
+         # I made sure it's character, so that ifelse statement would work
+         age = if_else(age == ">89", "89", age),  # replace ">89" with "89" so it shows up
+         age = as.numeric(age))                # convert to numeric 
 ggplot(filter(combined, Gene == "AAMDC"), aes(x = age, y = Expression)) +
   geom_point(color = "#6A5ACD") +
   labs(
@@ -85,9 +86,10 @@ ggplot(filter(combined, Gene == "AAMDC"), aes(x = age, y = Expression)) +
   ) +
   theme_classic()
 ```
-
 ```{r}
-# Then I filtered data to show where gene AAMDC is 
+# Then I filtered data to show where gene AAMDC is
+# I plotted a boxplot of gene expression by sex
+# I filled the boxes by mechanical ventilation status
 ggplot(filter(combined, Gene == "AAMDC"), aes(x = sex, y = Expression, fill = mechanical_ventilation)) +
   geom_boxplot() +
   labs(
