@@ -55,7 +55,8 @@ print(combined)
 ```{r}
 # I filtered my combined data for my gene of choice and then filtered it to show expression
 ggplot(filter(combined, Gene == "AAMDC"), aes(x = Expression)) +
-  geom_histogram(binwidth = 0.5, fill = "#20B2AA", color = "black") +
+  geom_histogram(binwidth = 0.5, fill = "#20B2AA", color = "black") + 
+  # I used https://www.computerhope.com/htmcolor.htm to find a color I liked
   labs(
     title = "Histogram of AAMDC Expression",
     x = "Expression",
@@ -63,10 +64,6 @@ ggplot(filter(combined, Gene == "AAMDC"), aes(x = Expression)) +
   ) +
   theme_classic()
 ```
-
-
-
-
 
 
 ```{r}
